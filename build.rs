@@ -55,6 +55,7 @@ fn prepare_tensorflow_source() -> PathBuf {
     let submodules = submodules();
 
     let copy_dir = fs_extra::dir::CopyOptions {
+        content_only: false,
         overwrite: true,
         skip_exist: false,
         buffer_size: 65536,
@@ -165,8 +166,7 @@ impl CompilationBuilder for cc::Build {
 fn cc_tensorflow_library() {
     let tflite = prepare_tensorflow_source();
     let out_dir = env::var("OUT_DIR").unwrap();
-    let tf_lib_name =
-        Path::new(&out_dir).join("libtensorflow-microlite.a".to_string());
+    let tf_lib_name = Path::new(&out_dir).join("libtensorflow-microlite.a".to_string());
 
     if is_cross_compiling().unwrap() {
         // Find include directory used by the crosscompiler for libm
@@ -220,10 +220,7 @@ fn cc_tensorflow_library() {
             .file(tflite.join("lite/kernels/kernel_util.cc"));
 
         // CMSIS-NN for ARM Cortex-M targets
-        if target.starts_with("thumb")
-            && target.contains("m-none-")
-            && cfg!(feature = "cmsis-nn")
-        {
+        if target.starts_with("thumb") && target.contains("m-none-") && cfg!(feature = "cmsis-nn") {
             println!("Build includes CMSIS-NN.");
             let cmsis = tflite.join("lite/micro/tools/make/downloads/cmsis");
 
@@ -309,8 +306,7 @@ fn bindgen_cross_builder() -> Result<bindgen::Builder> {
         // Add scraped paths to builder
         let mut builder = builder.detect_include_paths(false);
         for path in search_paths {
-            builder =
-                builder.clang_arg(format!("-I{}", path.to_string_lossy()));
+            builder = builder.clang_arg(format!("-I{}", path.to_string_lossy()));
         }
         Ok(builder)
     } else {
@@ -377,8 +373,7 @@ fn bindgen_tflite_types() {
             .clang_arg("-xc++")
             .clang_arg("-std=c++11");
 
-        let bindings =
-            bindings.generate().expect("Unable to generate bindings");
+        let bindings = bindings.generate().expect("Unable to generate bindings");
 
         // Write the bindings to $OUT_DIR/tflite_types.rs
         let out_path = PathBuf::from(out_dir).join("tflite_types.rs");
