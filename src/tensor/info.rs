@@ -16,6 +16,7 @@ pub struct TensorInfo<'a> {
     pub name: &'a str,
     pub element_type: ElementType,
     pub dims: &'a [i32],
+    pub bytes: usize,
 }
 
 impl fmt::Debug for TensorInfo<'_> {
@@ -24,6 +25,7 @@ impl fmt::Debug for TensorInfo<'_> {
             .field("name", &self.name)
             .field("element_type", &self.element_type)
             .field("dims", &self.dims)
+            .field("bytes", &self.bytes)
             .finish()
     }
 }
@@ -54,6 +56,7 @@ impl<'a> TryFrom<&'a bindings::TfLiteTensor> for TensorInfo<'a> {
                 let dims = &*t.dims;
                 dims.data.as_slice(dims.size as usize)
             },
+            bytes: t.bytes,
         })
     }
 }
