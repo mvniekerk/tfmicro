@@ -104,14 +104,14 @@ mod tensorflow {
     }}
 
     #[no_mangle]
-    // Repalcement for implementation in debug_log.cc
+    // Replacement for implementation in debug_log.cc
     pub extern "C" fn DebugLog(s: *const cty::c_char) {
         let slice = unsafe {
             let len = super::strlen::strlen(s);
             let ptr = s as *const u8;
             slice::from_raw_parts(ptr, len as usize + 1)
         };
-        info!("{}", str::from_utf8(slice).unwrap().trim());
+        // info!("{}", str::from_utf8(slice).unwrap().trim());
     }
 
     // Underlying assert function for tensorflow to use

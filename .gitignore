@@ -3,3 +3,5 @@
 Cargo.lock
 vgcore.*
 .gdb_history
+.idea/
+.idea/
